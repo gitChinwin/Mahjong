@@ -8,7 +8,7 @@ import (
 
 /**
 * @Author: Jam Wong
-* @Date: 2020/6/3 2:30 下午
+* @Date: 2020/6/3
  */
 
 func main() {

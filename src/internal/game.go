@@ -9,7 +9,7 @@ import (
 
 /**
 * @Author: Jam Wong
-* @Date: 2020/6/3 3:02 下午
+* @Date: 2020/6/3
  */
 
 type Game struct {
@@ -51,15 +51,11 @@ func NewGame() *Game {
 func shuffle() []*Tile {
 	tiles := AllTiles()
 	rand.Seed(time.Now().UnixNano())
-	//afterShuffle := make([]*Tile, len(tiles))
 
 	rand.Shuffle(len(tiles), func(i, j int) {
 		tiles[i], tiles[j] = tiles[j], tiles[i]
 	})
 
-	//for _, i := range tiles {
-	//	fmt.Printf("%s |", i.Print())
-	//}
 	return tiles
 }
 
@@ -94,6 +90,7 @@ func (game *Game) Deal() {
 
 	// debug
 	for _, j := range game.Players {
+		j.SortTiles()
 		fmt.Printf("%s: %s\n", j.Name, j.Show())
 	}
 
