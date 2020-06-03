@@ -85,7 +85,3 @@ func (t ts) Less(i, j int) bool {
 func (t ts) Swap(i, j int) {
 	t[i], t[j] = t[j], t[i]
 }
-
-func (t ts) WinWin() bool {
-	return true
-}
