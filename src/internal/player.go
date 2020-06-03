@@ -36,17 +36,21 @@ func InitPlayer(index int, isBanker bool) *Player {
 // Draw
 func (pl *Player) Draw(ch chan *Tile) {
 	pl.HoldTiles = append(pl.HoldTiles, <-ch)
+	pl.SortTiles()
 }
 
 // Discard
 func (pl *Player) Discard(n int) {
 	// Remove the tile at index n from pl.HoldTiles.
 	if len(pl.HoldTiles) < 2 {
-		log.Fatal("at least 1 tile.")
+		fmt.Printf("%s\n", pl.Show())
+		fmt.Println(pl.HoldTiles)
+		log.Fatal("at least 1 tile!")
 	}
 	pl.HoldTiles[n] = pl.HoldTiles[len(pl.HoldTiles)-1]
 	pl.HoldTiles[len(pl.HoldTiles)-1] = nil
 	pl.HoldTiles = pl.HoldTiles[:len(pl.HoldTiles)-1]
+	pl.SortTiles()
 }
 
 // Show

@@ -1,6 +1,9 @@
 package internal
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 /**
 * @Author: Jam Wong
@@ -21,18 +24,24 @@ func (pl *Player) Win2() bool {
 	for i := 0; i < len(pl.HoldTiles)-1; i++ {
 		if isPair(pl.HoldTiles[i], pl.HoldTiles[i+1]) {
 			tmp := make([]*Tile, 0)
-			copy(tmp, pl.HoldTiles)
+
+			tmp = pl.HoldTiles
+			fmt.Println(pl.HoldTiles)
 			remove(tmp, i+1)
 			remove(tmp, i)
+
+			if hu(tmp) {
+				return true
+			}
 		}
 	}
 
-	return true
+	return false
 }
 
 func remove(t []*Tile, n int) {
 	if len(t) < 2 {
-		log.Fatal("at least 1 tile.")
+		log.Fatal("at least 2 tile.")
 	}
 	t[n] = t[len(t)-1]
 	t[len(t)-1] = nil

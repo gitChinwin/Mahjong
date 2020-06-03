@@ -1,9 +1,13 @@
 package internal
 
 import (
+	"bufio"
 	"fmt"
+	"goutils/convert"
 	"log"
 	"math/rand"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -74,9 +78,9 @@ func (game *Game) Deal() {
 	fmt.Println("start deal")
 
 	// 三轮：一人四张， 从index 开始
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 4; i++ {
 		for _, j := range game.Players {
-			if i == 4 {
+			if i == 3 {
 				game.DealNToPlayer(j.Index, 1)
 			} else {
 				game.DealNToPlayer(j.Index, 4)
@@ -91,7 +95,36 @@ func (game *Game) Deal() {
 	// debug
 	for _, j := range game.Players {
 		j.SortTiles()
-		fmt.Printf("%s: %s\n", j.Name, j.Show())
+		fmt.Printf("%s: %s\n\n", j.Name, j.Show())
 	}
 
+	i := 1
+	for {
+		if game.Players[game.DealerIndex].Win2() {
+			fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
+			break
+		}
+		discardIndex := readIndex()
+		_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
+		game.Players[game.DealerIndex].Discard(discardIndex)
+		fmt.Printf("%s discard %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
+		i++
+
+		fmt.Println("==========================================================")
+
+		// draw
+		game.Players[game.DealerIndex].Draw(game.Tiles)
+		fmt.Printf("round %d: %s\n", i, game.Players[game.DealerIndex].Show())
+
+	}
+}
+
+func readIndex() int {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("-> ")
+	text, _ := reader.ReadString('\n')
+	// convert CRLF to LF
+	text = strings.Replace(text, "\n", "", -1)
+	i, _ := convert.StringToInt(text)
+	return i - 1
 }
