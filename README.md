@@ -7,6 +7,7 @@
 - [x] Draw
 - [x] Discard
 - [x] Auto Win 
+- [ ] AI bot
 - [ ] Pong / Kong / Chow
 - [ ] Flower Tile
 - [ ] Dice
