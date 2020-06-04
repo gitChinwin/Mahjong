@@ -2,7 +2,7 @@ package main
 
 import (
 	"Mahjong/src/internal"
-	"goutils/choke"
+	"github.com/wzyonggege/goutils/choke"
 	"log"
 )
 

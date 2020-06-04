@@ -3,7 +3,7 @@ package internal
 import (
 	"bufio"
 	"fmt"
-	"goutils/convert"
+	"github.com/wzyonggege/goutils/convert"
 	"log"
 	"math/rand"
 	"os"
@@ -100,21 +100,29 @@ func (game *Game) Deal() {
 
 	i := 1
 	for {
-		if game.Players[game.DealerIndex].Win2() {
+		if len(game.Players[game.DealerIndex].HoldTiles) != 14 {
+			log.Fatal("not 14")
+		}
+
+		if game.Players[game.DealerIndex].Win() {
 			fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
 			break
 		}
+
+		fmt.Printf("round %d: %s \n", i, game.Players[game.DealerIndex].Show())
+
 		discardIndex := readIndex()
 		_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
 		game.Players[game.DealerIndex].Discard(discardIndex)
-		fmt.Printf("%s discard %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
+		fmt.Printf("%s ====> %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
 		i++
 
 		fmt.Println("==========================================================")
 
 		// draw
-		game.Players[game.DealerIndex].Draw(game.Tiles)
-		fmt.Printf("round %d: %s\n", i, game.Players[game.DealerIndex].Show())
+		draw := game.Players[game.DealerIndex].Draw(game.Tiles)
+
+		fmt.Printf("<<<======= %s \n", draw.Print())
 
 	}
 }

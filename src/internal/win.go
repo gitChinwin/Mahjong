@@ -5,41 +5,42 @@ package internal
 * @Date: 2020/6/3
  */
 
-// win 回溯算法
-func (pl *Player) WinWin() bool {
-	pl.SortTiles()
+func (pl *Player) Win() bool {
+	cc := pl.CopySortTiles()
 
 	// 牌数量 3n+2
-	if (pl.HoldTiles.Len()-2)%3 != 0 {
+	if cc.Len() < 2 || (cc.Len()-2)%3 != 0 {
 		return false
 	}
 
-	var tmp [5][]*Tile
+	for i := 0; i < len(cc)-1; i++ {
+		if isPair(cc[i], cc[i+1]) {
+			tmp := make([]*Tile, 0)
 
-	for _, each := range pl.HoldTiles {
-		tmp[each.Type-1] = append(tmp[each.Type-1], each)
-	}
-
-	for i := 0; i < 5; i++ {
-		if len(tmp[i]) == 0 {
-			continue
-		}
-
-		if len(tmp[i]) == 1 {
-			return false
-		}
-
-		if len(tmp[i]) == 2 {
-			if !isPair(tmp[i][0], tmp[i][1]) {
-				return false
+			tmp = append(tmp, cc[:i]...)
+			tmp = append(tmp, cc[i+2:]...)
+			if canWinLoop(tmp) {
+				return true
 			}
 		}
-
-		for j := 0; j < len(tmp[i]); j++ {
-			//if tmp[i][j]
-		}
 	}
-	return true
+
+	return false
+}
+
+func canWinLoop(t []*Tile) bool {
+	if len(t) == 0 {
+		return true
+	}
+
+	if isSequence(t[0], t[1], t[2]) {
+		return canWinLoop(t[3:])
+	}
+
+	if isTriplet(t[0], t[1], t[2]) {
+		return canWinLoop(t[3:])
+	}
+	return false
 }
 
 // 将牌(雀头、对子)
@@ -52,7 +53,7 @@ func isSequence(a, b, c *Tile) bool {
 	if !(a.Type == b.Type && a.Type == c.Type) {
 		return false
 	}
-	if !(a.Rank == b.Rank+1 && b.Rank == c.Rank+1) {
+	if !(a.Rank == b.Rank-1 && b.Rank == c.Rank-1) {
 		return false
 	}
 	return true
@@ -61,16 +62,4 @@ func isSequence(a, b, c *Tile) bool {
 // 刻子	Triplet
 func isTriplet(a, b, c *Tile) bool {
 	return (a.Type == b.Type && a.Type == c.Type) && (a.Rank == b.Rank && a.Rank == c.Rank)
-}
-
-func removePair() {
-
-}
-
-func removeSequence() {
-
-}
-
-func removeTriplet() {
-
 }

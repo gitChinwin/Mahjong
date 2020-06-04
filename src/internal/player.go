@@ -17,7 +17,6 @@ type Player struct {
 	IsBanker     bool // dealer/banker
 	Name         string
 	Index        int
-	Win          bool
 	DiscardTiles ts // 出牌牌堆
 	HoldTiles    ts // 手牌
 }
@@ -27,16 +26,16 @@ func InitPlayer(index int, isBanker bool) *Player {
 		IsBanker:     isBanker,
 		Name:         fmt.Sprintf("player_%d", index),
 		Index:        index,
-		Win:          false,
 		DiscardTiles: make([]*Tile, 0),
 		HoldTiles:    make([]*Tile, 0),
 	}
 }
 
 // Draw
-func (pl *Player) Draw(ch chan *Tile) {
-	pl.HoldTiles = append(pl.HoldTiles, <-ch)
-	pl.SortTiles()
+func (pl *Player) Draw(ch chan *Tile) *Tile {
+	t := <-ch
+	pl.HoldTiles = append(pl.HoldTiles, t)
+	return t
 }
 
 // Discard
@@ -57,7 +56,20 @@ func (pl *Player) Discard(n int) {
 func (pl *Player) Show() string {
 	var s string
 	s += "|"
-	for _, i := range pl.HoldTiles {
+	for idx, i := range pl.HoldTiles {
+		s += i.Print()
+		s += "|"
+		if idx%4 == 3 {
+			s += "  |"
+		}
+	}
+	return s
+}
+
+func (t ts) Show(from, to int) string {
+	var s string
+	s += "|"
+	for _, i := range t[from:to] {
 		s += i.Print()
 		s += "|"
 	}
@@ -67,6 +79,13 @@ func (pl *Player) Show() string {
 // Order 使用快排
 func (pl *Player) SortTiles() {
 	sort.Sort(pl.HoldTiles)
+}
+
+func (pl *Player) CopySortTiles() ts {
+	ttt := make(ts, 0)
+	ttt = append(ttt, pl.HoldTiles...)
+	sort.Sort(ttt)
+	return ttt
 }
 
 func (t ts) Len() int {
