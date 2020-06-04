@@ -100,29 +100,46 @@ func (game *Game) Deal() {
 
 	i := 1
 	for {
-		if len(game.Players[game.DealerIndex].HoldTiles) != 14 {
-			log.Fatal("not 14")
+		for u := 0; u < 4; u++ {
+			if u == game.DealerIndex {
+				if len(game.Players[game.DealerIndex].HoldTiles) == 14 {
+					if game.Players[game.DealerIndex].Win() {
+						fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
+						return
+					}
+
+					fmt.Printf("round %d: %s \n", i, game.Players[game.DealerIndex].Show())
+
+					discardIndex := readIndex()
+					_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
+					game.Players[game.DealerIndex].Discard(discardIndex)
+					fmt.Printf("%s ====> %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
+					i++
+
+				} else {
+					fmt.Println("==========================================================")
+					fmt.Printf("round %d: %s \n", i, game.Players[game.DealerIndex].Show())
+
+					// draw
+					draw := game.Players[game.DealerIndex].Draw(game.Tiles)
+
+					fmt.Printf("<<<======= %s \n", draw.Print())
+
+					if game.Players[game.DealerIndex].Win() {
+						fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
+						return
+					}
+
+					discardIndex := readIndex()
+					_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
+					game.Players[game.DealerIndex].Discard(discardIndex)
+					fmt.Printf("%s ====> %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
+					i++
+				}
+			} else {
+				game.BotRound(u)
+			}
 		}
-
-		if game.Players[game.DealerIndex].Win() {
-			fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
-			break
-		}
-
-		fmt.Printf("round %d: %s \n", i, game.Players[game.DealerIndex].Show())
-
-		discardIndex := readIndex()
-		_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
-		game.Players[game.DealerIndex].Discard(discardIndex)
-		fmt.Printf("%s ====> %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
-		i++
-
-		fmt.Println("==========================================================")
-
-		// draw
-		draw := game.Players[game.DealerIndex].Draw(game.Tiles)
-
-		fmt.Printf("<<<======= %s \n", draw.Print())
 
 	}
 }
@@ -135,4 +152,24 @@ func readIndex() int {
 	text = strings.Replace(text, "\n", "", -1)
 	i, _ := convert.StringToInt(text)
 	return i - 1
+}
+
+func readOptions() int {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("-> ")
+	text, _ := reader.ReadString('\n')
+	// convert CRLF to LF
+	text = strings.Replace(text, "\n", "", -1)
+	i, _ := convert.StringToInt(text)
+	return i - 1
+}
+
+func (game *Game) BotRound(playerIndex int) {
+	player := game.Players[playerIndex]
+	// draw
+	_ = player.Draw(game.Tiles)
+	// discard
+	_dis := player.HoldTiles[13]
+	player.Discard(13)
+	fmt.Printf("%s ====> %s\n", player.Name, _dis.Print())
 }

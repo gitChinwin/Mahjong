@@ -64,6 +64,55 @@ func TestPlayer_Win(t *testing.T) {
 
 			So(p.Win(), ShouldBeTrue)
 		})
+
+		//|四筒|五筒|六筒|五条|  |六条|七条|三万|三万|  |四万|五万|六万|六万|  |七万|五万|
+		Convey("test 3", func(t C) {
+			p.HoldTiles = append(p.HoldTiles,
+				&Tile{TileDot, 4},
+				&Tile{TileDot, 5},
+				&Tile{TileDot, 6},
+
+				&Tile{TileBamboo, 5},
+				&Tile{TileBamboo, 6},
+				&Tile{TileBamboo, 7},
+
+				&Tile{TileCharacter, 3},
+				&Tile{TileCharacter, 3},
+				&Tile{TileCharacter, 4},
+				&Tile{TileCharacter, 5},
+				&Tile{TileCharacter, 5},
+				&Tile{TileCharacter, 6},
+				&Tile{TileCharacter, 6},
+
+				&Tile{TileCharacter, 7},
+			)
+
+			So(p.Win(), ShouldBeTrue)
+		})
+
+		Convey("test 4", func(t C) {
+			p.HoldTiles = append(p.HoldTiles,
+				&Tile{TileDot, 4},
+				&Tile{TileDot, 5},
+				&Tile{TileDot, 6},
+
+				&Tile{TileBamboo, 5},
+				&Tile{TileBamboo, 6},
+				&Tile{TileBamboo, 7},
+
+				&Tile{TileCharacter, 3},
+				&Tile{TileCharacter, 3},
+				&Tile{TileCharacter, 4},
+				&Tile{TileCharacter, 4},
+
+				&Tile{TileCharacter, 5},
+				&Tile{TileCharacter, 5},
+				&Tile{TileCharacter, 6},
+				&Tile{TileCharacter, 6},
+			)
+
+			So(p.Win(), ShouldBeTrue)
+		})
 	})
 }
 

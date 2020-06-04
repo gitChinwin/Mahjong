@@ -2,6 +2,7 @@ package internal
 
 import (
 	"log"
+	"sort"
 )
 
 /**
@@ -10,6 +11,8 @@ import (
  */
 
 type tileType int
+
+type ts []*Tile
 
 var (
 	suitWords   = []rune("一二三四五六七八九")
@@ -100,4 +103,45 @@ func AllTiles() []*Tile {
 		)
 	}
 	return a
+}
+
+func (t ts) Len() int {
+	return len(t)
+}
+
+// 如果 i 索引的数据小于 j 索引的数据，返回 true，且不会调用下面的 Swap()，即数据升序排序。
+func (t ts) Less(i, j int) bool {
+	iObj := t[i]
+	jObj := t[j]
+	if iObj.Type < jObj.Type {
+		return true
+	}
+	if iObj.Type == jObj.Type {
+		return iObj.Rank <= jObj.Rank
+	}
+	return false
+}
+
+func (t ts) Swap(i, j int) {
+	t[i], t[j] = t[j], t[i]
+}
+
+func (t ts) SortTiles() ts {
+	ttt := make(ts, 0)
+	ttt = append(ttt, t...)
+	sort.Sort(ttt)
+	return ttt
+}
+
+func (t ts) Show(from, to int) string {
+	var s string
+	s += "|"
+	for idx, i := range t[from:to] {
+		s += i.Print()
+		s += "|"
+		if idx%4 == 3 {
+			s += "  |"
+		}
+	}
+	return s
 }
