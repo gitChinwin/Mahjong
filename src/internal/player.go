@@ -1,9 +1,9 @@
 package internal
 
-/**
-* @Author: Jam Wong
-* @Date: 2020/6/3
- */
+/********************
+* @Author: Jam Wong *
+* @Date: 2020/6/3   *
+ ********************/
 
 import (
 	"fmt"
@@ -32,8 +32,7 @@ func InitPlayer(index int, isBanker bool) *Player {
 	}
 }
 
-// Draw
-func (pl *Player) Draw(ch chan *Tile) *Tile {
+func (pl *Player) DealTo(ch chan *Tile) *Tile {
 	t := <-ch
 	pl.HoldTiles = append(pl.HoldTiles, t)
 	if len(ch) == 0 {
@@ -41,6 +40,27 @@ func (pl *Player) Draw(ch chan *Tile) *Tile {
 		os.Exit(0)
 	}
 	return t
+}
+
+// Draw
+func (pl *Player) Draw(ch chan *Tile) (*Tile, bool) {
+	t := <-ch
+	pl.HoldTiles = append(pl.HoldTiles, t)
+
+	// 判胡
+	if pl.Win() {
+		return t, true
+	}
+	// 判暗杠
+	if pl.HoldTiles.HaveConcealedKong() {
+
+	}
+
+	if len(ch) == 0 {
+		fmt.Println("over!!!!")
+		os.Exit(0)
+	}
+	return t, false
 }
 
 // Discard

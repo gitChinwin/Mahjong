@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-/**
-* @Author: Jam Wong
-* @Date: 2020/6/3
- */
+/********************
+* @Author: Jam Wong *
+* @Date: 2020/6/3   *
+ ********************/
 
 type Game struct {
 	Tiles       chan *Tile
@@ -69,8 +69,12 @@ func (game *Game) DealNToPlayer(index int, n int) {
 		log.Fatal("n require [1, 4]")
 	}
 	for i := 1; i <= n; i++ {
-		pl.Draw(game.Tiles)
+		pl.DealTo(game.Tiles)
 	}
+}
+
+func (game *Game) genOptions() {
+
 }
 
 // Deal 发牌
@@ -85,12 +89,8 @@ func (game *Game) Deal() {
 			} else {
 				game.DealNToPlayer(j.Index, 4)
 			}
-			//fmt.Printf("%s: %s\n", j.Name, j.Show())
 		}
 	}
-
-	// 庄 1 张
-	game.DealNToPlayer(game.DealerIndex, 1)
 
 	// debug
 	for _, j := range game.Players {
@@ -98,48 +98,51 @@ func (game *Game) Deal() {
 		fmt.Printf("%s: %s\n\n", j.Name, j.Show())
 	}
 
+	// 庄 1 张
+	_, isWin := game.Players[game.DealerIndex].Draw(game.Tiles)
+	if isWin {
+		fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
+		return
+	}
+	fmt.Printf("round 1: %s \n", game.Players[game.DealerIndex].Show())
+
+	discardIndex := readIndex()
+	_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
+	game.Players[game.DealerIndex].Discard(discardIndex)
+	fmt.Printf("%s ====> %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
+
 	i := 1
 	for {
 		for u := 0; u < 4; u++ {
 			if u == game.DealerIndex {
-				if len(game.Players[game.DealerIndex].HoldTiles) == 14 {
-					if game.Players[game.DealerIndex].Win() {
-						fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
-						return
-					}
-
-					fmt.Printf("round %d: %s \n", i, game.Players[game.DealerIndex].Show())
-
-					discardIndex := readIndex()
-					_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
-					game.Players[game.DealerIndex].Discard(discardIndex)
-					fmt.Printf("%s ====> %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
-					i++
-
-				} else {
-					fmt.Println("==========================================================")
-					fmt.Printf("round %d: %s \n", i, game.Players[game.DealerIndex].Show())
-
-					// draw
-					draw := game.Players[game.DealerIndex].Draw(game.Tiles)
-
-					fmt.Printf("<<<======= %s \n", draw.Print())
-
-					if game.Players[game.DealerIndex].Win() {
-						fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
-						return
-					}
-
-					discardIndex := readIndex()
-					_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
-					game.Players[game.DealerIndex].Discard(discardIndex)
-					fmt.Printf("%s ====> %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
-					i++
+				if i == 1 {
+					continue
 				}
+				fmt.Println("==========================================================")
+				fmt.Printf("round %d: %s \n", i, game.Players[game.DealerIndex].Show())
+
+				// draw
+				draw, isWin := game.Players[game.DealerIndex].Draw(game.Tiles)
+
+				fmt.Printf("<<<======= %s \n", draw.Print())
+
+				if isWin {
+					fmt.Printf("winwin %s\n", game.Players[game.DealerIndex].Show())
+					return
+				}
+
+				discardIndex := readIndex()
+				_dis := game.Players[game.DealerIndex].HoldTiles[discardIndex]
+				game.Players[game.DealerIndex].Discard(discardIndex)
+				fmt.Printf("%s ====> %s\n", game.Players[game.DealerIndex].Show(), _dis.Print())
 			} else {
-				game.BotRound(u)
+				if game.BotRound(u) {
+					fmt.Printf("Bot winwin %s\n", game.Players[u].Show())
+					return
+				}
 			}
 		}
+		i++
 
 	}
 }
@@ -164,12 +167,13 @@ func readOptions() int {
 	return i - 1
 }
 
-func (game *Game) BotRound(playerIndex int) {
+func (game *Game) BotRound(playerIndex int) bool {
 	player := game.Players[playerIndex]
 	// draw
-	_ = player.Draw(game.Tiles)
+	_, isWin := player.Draw(game.Tiles)
 	// discard
 	_dis := player.HoldTiles[13]
 	player.Discard(13)
 	fmt.Printf("%s ====> %s\n", player.Name, _dis.Print())
+	return isWin
 }

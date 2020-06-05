@@ -5,10 +5,10 @@ import (
 	"sort"
 )
 
-/**
-* @Author: Jam Wong
-* @Date: 2020/6/3 3:01 下午
- */
+/********************
+* @Author: Jam Wong *
+* @Date: 2020/6/3   *
+ ********************/
 
 type tileType int
 
@@ -31,6 +31,10 @@ const (
 type Tile struct {
 	Type tileType
 	Rank int
+}
+
+func (tt *Tile) SameAs(t *Tile) bool {
+	return tt.Type == t.Type && tt.Rank == t.Rank
 }
 
 func (t *Tile) Print() string {
@@ -144,4 +148,18 @@ func (t ts) Show(from, to int) string {
 		}
 	}
 	return s
+}
+
+func (t ts) HaveConcealedKong() bool {
+	ttt := t.SortTiles()
+	if len(ttt) < 4 {
+		return false
+	}
+
+	for i := 0; i < len(ttt)-3; i++ {
+		if ttt[i].SameAs(ttt[i+1]) && ttt[i].SameAs(ttt[i+2]) && ttt[i].SameAs(ttt[i+3]) {
+			return true
+		}
+	}
+	return false
 }

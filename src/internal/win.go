@@ -1,9 +1,9 @@
 package internal
 
-/**
-* @Author: Jam Wong
-* @Date: 2020/6/3
- */
+/********************
+* @Author: Jam Wong *
+* @Date: 2020/6/3   *
+ ********************/
 
 func (pl *Player) Win() bool {
 	cc := pl.CopySortTiles()
