@@ -157,15 +157,7 @@ func readIndex() int {
 	return i - 1
 }
 
-func readOptions() int {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("-> ")
-	text, _ := reader.ReadString('\n')
-	// convert CRLF to LF
-	text = strings.Replace(text, "\n", "", -1)
-	i, _ := convert.StringToInt(text)
-	return i - 1
-}
+
 
 func (game *Game) BotRound(playerIndex int) bool {
 	player := game.Players[playerIndex]

@@ -150,18 +150,18 @@ func (t ts) Show(from, to int) string {
 	return s
 }
 
-func (t ts) HaveConcealedKong() bool {
+func (t ts) HaveConcealedKong() (*Tile, bool) {
 	ttt := t.SortTiles()
 	if len(ttt) < 4 {
-		return false
+		return nil, false
 	}
 
 	for i := 0; i < len(ttt)-3; i++ {
 		if ttt[i].SameAs(ttt[i+1]) && ttt[i].SameAs(ttt[i+2]) && ttt[i].SameAs(ttt[i+3]) {
-			return true
+			return ttt[i], true
 		}
 	}
-	return false
+	return nil, false
 }
 
 func (t ts) CanKong(tile *Tile) bool {

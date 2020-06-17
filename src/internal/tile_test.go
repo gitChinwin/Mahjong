@@ -20,7 +20,8 @@ func Test_HaveConcealedKong(t *testing.T) {
 			&Tile{TileDragon, 1},
 			&Tile{TileDragon, 2},
 		)
-		So(obj.HaveConcealedKong(), ShouldBeTrue)
+		_, ok := obj.HaveConcealedKong()
+		So(ok, ShouldBeTrue)
 
 		obj = make(ts, 0)
 		obj = append(obj,
@@ -29,7 +30,8 @@ func Test_HaveConcealedKong(t *testing.T) {
 			&Tile{TileDragon, 1},
 			&Tile{TileDragon, 2},
 		)
-		So(obj.HaveConcealedKong(), ShouldBeFalse)
+		_, ok = obj.HaveConcealedKong()
+		So(ok, ShouldBeFalse)
 
 		obj = make(ts, 0)
 		obj = append(obj,
@@ -46,7 +48,8 @@ func Test_HaveConcealedKong(t *testing.T) {
 			&Tile{TileBamboo, 7},
 			&Tile{TileDragon, 1},
 		)
-		So(obj.HaveConcealedKong(), ShouldBeTrue)
+		_, ok = obj.HaveConcealedKong()
+		So(ok, ShouldBeTrue)
 	})
 
 }

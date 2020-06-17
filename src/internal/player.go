@@ -6,10 +6,13 @@ package internal
  ********************/
 
 import (
+	"bufio"
 	"fmt"
+	"github.com/wzyonggege/goutils/convert"
 	"log"
 	"os"
 	"sort"
+	"strings"
 )
 
 type Player struct {
@@ -42,20 +45,62 @@ func (pl *Player) DealTo(ch chan *Tile) *Tile {
 	return t
 }
 
+type option struct {
+	tile *Tile
+	optionType string
+}
+
+func readOptions(msg string) int {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print(msg + " -> ")
+	text, _ := reader.ReadString('\n')
+	// convert CRLF to LF
+	text = strings.Replace(text, "\n", "", -1)
+	i, _ := convert.StringToInt(text)
+	return i - 1
+}
+
+func genOptions(args []*option) *option {
+	var msg string
+	for idx, val := range args {
+		msg += fmt.Sprintf("%d. %s [%s]\n", idx + 1, val.optionType, val.tile.Print())
+	}
+	choice := readOptions(msg)
+	if choice > len(args) {
+		fmt.Println("choice again.")
+		return genOptions(args)
+	}
+	return args[choice - 1]
+}
+
 // Draw
 func (pl *Player) Draw(ch chan *Tile) (*Tile, bool) {
 	t := <-ch
 	pl.HoldTiles = append(pl.HoldTiles, t)
 
+	opts := make([]*option, 0)
+
 	// 判胡
 	if pl.Win() {
-		return t, true
+		opts = append(opts, &option{t, "win"})
 	}
 	// 判暗杠
-	if pl.HoldTiles.HaveConcealedKong() {
-
+	if concealedKongTile, ok := pl.HoldTiles.HaveConcealedKong(); ok {
+		opts = append(opts, &option{concealedKongTile, "concealedKong"})
+	}
+	if len(opts) > 0 {
+		opts = append(opts, &option{nil, "pass"})
 	}
 
+	opt := genOptions(opts)
+	switch opt.optionType {
+	case "win":
+		return t, true
+	case "concealedKong":
+		pl.ConcealedKong()
+	}
+
+	// TODO
 	if len(ch) == 0 {
 		fmt.Println("over!!!!")
 		os.Exit(0)
