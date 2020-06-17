@@ -90,14 +90,13 @@ func (pl *Player) Draw(ch chan *Tile) (*Tile, bool) {
 	}
 	if len(opts) > 0 {
 		opts = append(opts, &option{nil, "pass"})
-	}
-
-	opt := genOptions(opts)
-	switch opt.optionType {
-	case "win":
-		return t, true
-	case "concealedKong":
-		pl.ConcealedKong()
+		opt := genOptions(opts)
+		switch opt.optionType {
+		case "win":
+			return t, true
+		case "concealedKong":
+			pl.ConcealedKong()
+		}
 	}
 
 	// TODO
