@@ -115,7 +115,3 @@ func TestPlayer_Win(t *testing.T) {
 		})
 	})
 }
-
-//func BenchmarkPlayer_Win(b *testing.B) {
-//
-//}

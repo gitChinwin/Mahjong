@@ -33,32 +33,32 @@ type Tile struct {
 	Rank int
 }
 
-func (tt *Tile) SameAs(t *Tile) bool {
-	return tt.Type == t.Type && tt.Rank == t.Rank
+func (tile *Tile) SameAs(t *Tile) bool {
+	return tile.Type == t.Type && tile.Rank == t.Rank
 }
 
-func (t *Tile) Print() string {
-	if t == nil {
+func (tile *Tile) Print() string {
+	if tile == nil {
 		log.Fatal("tile is not init")
 	}
 
 	var unit []rune
 
-	if t.Rank < 1 || t.Rank > 9 {
+	if tile.Rank < 1 || tile.Rank > 9 {
 		log.Fatal("num out of range")
 	}
 
-	switch t.Type {
+	switch tile.Type {
 	case TileDot:
-		unit = append(unit, suitWords[t.Rank-1], '筒')
+		unit = append(unit, suitWords[tile.Rank-1], '筒')
 	case TileBamboo:
-		unit = append(unit, suitWords[t.Rank-1], '条')
+		unit = append(unit, suitWords[tile.Rank-1], '条')
 	case TileCharacter:
-		unit = append(unit, suitWords[t.Rank-1], '万')
+		unit = append(unit, suitWords[tile.Rank-1], '万')
 	case TileDragon:
-		unit = append(unit, dragonWords[t.Rank-1])
+		unit = append(unit, dragonWords[tile.Rank-1])
 	case TileWind:
-		unit = append(unit, windWords[t.Rank-1])
+		unit = append(unit, windWords[tile.Rank-1])
 	default:
 		log.Fatal("type not found")
 	}
@@ -158,6 +158,42 @@ func (t ts) HaveConcealedKong() bool {
 
 	for i := 0; i < len(ttt)-3; i++ {
 		if ttt[i].SameAs(ttt[i+1]) && ttt[i].SameAs(ttt[i+2]) && ttt[i].SameAs(ttt[i+3]) {
+			return true
+		}
+	}
+	return false
+}
+
+func (t ts) CanKong(tile *Tile) bool {
+	tmp := make(ts, 0)
+	tmp = append(tmp, t...)
+	tmp = append(tmp, tile)
+
+	ttt := tmp.SortTiles()
+	if len(ttt) < 4 {
+		return false
+	}
+
+	for i := 0; i < len(ttt)-3; i++ {
+		if ttt[i].SameAs(tile) && ttt[i].SameAs(ttt[i+1]) && ttt[i].SameAs(ttt[i+2]) && ttt[i].SameAs(ttt[i+3]) {
+			return true
+		}
+	}
+	return false
+}
+
+func (t ts) CanPong(tile *Tile) bool {
+	tmp := make(ts, 0)
+	tmp = append(tmp, t...)
+	tmp = append(tmp, tile)
+
+	ttt := tmp.SortTiles()
+	if len(ttt) < 3 {
+		return false
+	}
+
+	for i := 0; i < len(ttt)-2; i++ {
+		if ttt[i].SameAs(tile) && ttt[i].SameAs(ttt[i+1]) && ttt[i].SameAs(ttt[i+2]) {
 			return true
 		}
 	}
